@@ -1,13 +1,11 @@
 
 var d = 0;
 
-function sodukuBox()
+function sodukuBox(value)
 {
-   d++ ; 
-   d = d > 9 ? 1 : d;
-   if (( d % 2)  == 1)
+   if (value)
    {
-      return document.createTextNode(d);
+      return document.createTextNode(value);
    }
    else
    {
@@ -51,7 +49,9 @@ function createSodukuTable()
                  for (var n = 0; n < 3; n++)
                  {
                     var ntd = document.createElement('td');
-                    var sb = sodukuBox();
+                    var x = (i * 3) + m;
+                    var y = (j * 3) + n;
+                    var sb = sodukuBox(puzzle[x][y]);
                     ntd.appendChild(sb);
                     ntr.appendChild(ntd);
                  }
