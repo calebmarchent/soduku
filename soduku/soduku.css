@@ -27,5 +27,11 @@ table.box td {
    height:20;
 } 
 
+.notposs {
+   /* color: Gainsboro; *//* Very light gray - useful for debug */
+   color: white; 
+}
 
-
+.isposs {
+   font-weight: bold;
+}
