@@ -4,6 +4,7 @@ var d = 0;
 function sodukuBox(value)
 {
     var bx = document.createElement("div");
+    bx.value = null;
     bx.possibility = [];
     for (var c = 1; c <= 9; c++)
     {
@@ -15,6 +16,7 @@ function sodukuBox(value)
     if (value)
     {
         bx.appendChild(document.createTextNode(value));
+        bx.value = value;
     }
     else
     {
@@ -42,9 +44,7 @@ function sodukuBox(value)
           this.possibility[c].className = this.possibility[c].possible ? 'isposs' : 'notposs' ;
        }
     }
-    bx.possibility[5].possible = false; 
 
-    bx.refresh();
     return bx;
 }
 
@@ -52,6 +52,14 @@ function sodukuBox(value)
 
 function createSodukuTable()
 {
+    var p = 0;
+    var allBoxes = [];
+
+    /* References to box square, row and columns */
+    var squares = [];  
+    var rows = []; 
+    var columns = []; 
+
     var body = document.getElementsByTagName('body')[0];
     var tbl = document.createElement('table');
     var tbdy = document.createElement('tbody');
@@ -72,9 +80,17 @@ function createSodukuTable()
                     var ntd = document.createElement('td');
                     var x = (i * 3) + m;
                     var y = (j * 3) + n;
-                    var sb = sodukuBox(puzzle[x][y]);
-                    ntd.appendChild(sb);
+                    allBoxes[p] = sodukuBox(puzzle[x][y]);
+                    /* Add to the indicies */
+                    if (!squares[(3*i)+j])
+                    {
+                       squares[(3*i)+j] = [];
+                    }
+                    squares[(3*i)+j].push(allBoxes[p]);
+
+                    ntd.appendChild(allBoxes[p]);
                     ntr.appendChild(ntd);
+                    p++;
                 }
                 ntbdy.appendChild(ntr);
             }
@@ -86,6 +102,33 @@ function createSodukuTable()
     }
     tbl.appendChild(tbdy);
     body.appendChild(tbl);
+
+    /* Apply Rules */
+    for (var si = 0; si < squares.length; si++)
+    {
+       var vals = [true,true,true,true,true,true,true,true,true];
+       /* Work out the known values for each and remove from all */
+       for (var bi=0;bi<9;bi++)
+       {
+          if (squares[si][bi].value)
+          {
+              var v = squares[si][bi].value;
+              for (var ui=0; ui < 9; ui++)
+              {
+                 squares[si][ui].possibility[v].possible = false;
+              }
+          }
+       }
+       /* Now eliminate that value from all boxes in the sqaure */
+    }
+    
+
+    /* Refresh display state of all boxes */
+    for (p = 0; p < allBoxes.length; p++)
+    {
+        allBoxes[p].refresh();
+    }
+
 }
 
 
