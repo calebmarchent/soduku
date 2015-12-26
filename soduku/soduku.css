@@ -1,0 +1,28 @@
+td { 
+    vertical-align:middle; 
+    text-align: center;
+    margin:0px;
+    border-collapse:collapse; 
+    padding:0px;
+    border:1px;
+    border-color:black;
+    border-style:solid;
+}
+table { 
+   font:9pt arial;
+   border:0px;
+   border-collapse:collapse; 
+} 
+
+table.square td {
+    border-color:silver;
+}
+
+table.box td {
+   border:0px;
+   width:20;
+   height:20;
+} 
+
+
+
