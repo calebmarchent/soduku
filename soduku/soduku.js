@@ -1,6 +1,16 @@
 
+var d = 0;
+
 function sodukuBox()
 {
+   d++ ; 
+   d = d > 9 ? 1 : d;
+   if (( d % 2)  == 1)
+   {
+      return document.createTextNode(d);
+   }
+   else
+   {
    var ntbl = document.createElement('table');
    var ntbdy = document.createElement('tbody');
    ntbl.className += 'box';
@@ -16,6 +26,7 @@ function sodukuBox()
    }
    ntbl.appendChild(ntbdy);
    return ntbl;
+   }
 }
 
 

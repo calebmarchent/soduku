@@ -9,16 +9,19 @@ td {
     border-style:solid;
 }
 table { 
-   font:9pt arial;
+   font:27pt arial;
    border:0px;
    border-collapse:collapse; 
 } 
 
 table.square td {
     border-color:silver;
+    width:60px;
+    height:60px;
 }
 
 table.box td {
+   font:9pt arial;
    border:0px;
    width:20;
    height:20;
