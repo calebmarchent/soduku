@@ -39,9 +39,25 @@ function sodukuBox(value)
 
     bx.refresh = function ()
     {
+       this.num_possibilies = 0;
+       var pos = null;
        for (var c = 1; c <= 9; c++)
        {
-          this.possibility[c].className = this.possibility[c].possible ? 'isposs' : 'notposs' ;
+          if (this.possibility[c].possible)
+          { 
+              this.possibility[c].className = 'isposs';
+              this.num_possibilies++;
+              pos = c; /* Store value so that can be assigned if we find the number of possibilites to be zero */
+          }
+          else
+          {
+              this.possibility[c].className = 'notposs' ;
+          }
+       }
+       if (this.num_possibilies == 1)
+       {
+          this.value = pos;
+          this.possibility[pos].className = 'onlyposs' ;
        }
     }
 
@@ -116,17 +132,18 @@ function createSodukuTable()
     body.appendChild(tbl);
 
     /* Apply Rules */
-    filter_by_defined_in_set(squares);
-    filter_by_defined_in_set(rows);
-    filter_by_defined_in_set(columns);
-   
-
-    /* Refresh display state of all boxes */
-    for (p = 0; p < allBoxes.length; p++)
+    for (var loop=0; loop <8; loop++)
     {
-        allBoxes[p].refresh();
-    }
+        filter_by_defined_in_set(squares);
+        filter_by_defined_in_set(rows);
+        filter_by_defined_in_set(columns);
 
+        /* Refresh display state of all boxes */
+        for (p = 0; p < allBoxes.length; p++)
+        {
+           allBoxes[p].refresh();
+        }
+    }
 }
 
 
@@ -142,7 +159,10 @@ function filter_by_defined_in_set(boxSet)
               var v = boxSet[si][bi].value;
               for (var ui=0; ui < 9; ui++)
               {
-                 boxSet[si][ui].possibility[v].possible = false;
+                 if (ui != bi)
+                 {
+                     boxSet[si][ui].possibility[v].possible = false;
+                 }
               }
           }
        }
