@@ -1,5 +1,5 @@
 
-var d = 0;
+var change_occured = false;
 
 function sodukuBox(value)
 {
@@ -132,8 +132,9 @@ function createSodukuTable()
     body.appendChild(tbl);
 
     /* Apply Rules */
-    for (var loop=0; loop <8; loop++)
+    do 
     {
+        change_occured = false;
         filter_by_defined_in_set(squares);
         filter_by_defined_in_set(rows);
         filter_by_defined_in_set(columns);
@@ -143,7 +144,8 @@ function createSodukuTable()
         {
            allBoxes[p].refresh();
         }
-    }
+    } /* Keep going until no more changes are provoked by the rules we know */
+    while (change_occured);
 }
 
 
@@ -159,9 +161,10 @@ function filter_by_defined_in_set(boxSet)
               var v = boxSet[si][bi].value;
               for (var ui=0; ui < 9; ui++)
               {
-                 if (ui != bi)
+                 if (ui != bi && boxSet[si][ui].possibility[v].possible)
                  {
                      boxSet[si][ui].possibility[v].possible = false;
+                     change_occured = true;
                  }
               }
           }
