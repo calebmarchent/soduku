@@ -88,6 +88,18 @@ function createSodukuTable()
                     }
                     squares[(3*i)+j].push(allBoxes[p]);
 
+                    if (!rows[x])
+                    {
+                       rows[x] = [];
+                    }
+                    rows[x].push(allBoxes[p]);
+
+                    if (!columns[y])
+                    {
+                       columns[y] = [];
+                    }
+                    columns[y].push(allBoxes[p]);
+
                     ntd.appendChild(allBoxes[p]);
                     ntr.appendChild(ntd);
                     p++;
@@ -104,24 +116,10 @@ function createSodukuTable()
     body.appendChild(tbl);
 
     /* Apply Rules */
-    for (var si = 0; si < squares.length; si++)
-    {
-       var vals = [true,true,true,true,true,true,true,true,true];
-       /* Work out the known values for each and remove from all */
-       for (var bi=0;bi<9;bi++)
-       {
-          if (squares[si][bi].value)
-          {
-              var v = squares[si][bi].value;
-              for (var ui=0; ui < 9; ui++)
-              {
-                 squares[si][ui].possibility[v].possible = false;
-              }
-          }
-       }
-       /* Now eliminate that value from all boxes in the sqaure */
-    }
-    
+    filter_by_defined_in_set(squares);
+    filter_by_defined_in_set(rows);
+    filter_by_defined_in_set(columns);
+   
 
     /* Refresh display state of all boxes */
     for (p = 0; p < allBoxes.length; p++)
@@ -132,6 +130,25 @@ function createSodukuTable()
 }
 
 
+function filter_by_defined_in_set(boxSet)
+{
+    for (var si = 0; si < boxSet.length; si++)
+    {
+       /* Work out the known values for each and remove from all */
+       for (var bi=0;bi<9;bi++)
+       {
+          if (boxSet[si][bi].value)
+          {
+              var v = boxSet[si][bi].value;
+              for (var ui=0; ui < 9; ui++)
+              {
+                 boxSet[si][ui].possibility[v].possible = false;
+              }
+          }
+       }
+       /* Now eliminate that value from all boxes in the sqaure */
+    }
+} 
 
 
 
