@@ -64,6 +64,59 @@ function sodukuBox(value)
     return bx;
 }
 
+/******************** Rules ***************************************************/
+/* 1. If number the only number possible for any cell in the group, remove it */
+/*    from the possibilites for all other cells                               */
+/* 2. If any number only possible in one cell in the group, then it is the    */ 
+/*    value of that cell                                                      */
+/******************************************************************************/
+function filter_by_defined_in_set(boxSet)
+{
+    for (var si = 0; si < boxSet.length; si++)
+    {
+       /* Work out the known values for each and remove from all */
+       for (var bi=0;bi<9;bi++)
+       {
+          if (boxSet[si][bi].value)
+          {
+              var v = boxSet[si][bi].value;
+              for (var ui=0; ui < 9; ui++)
+              {
+                 if (ui != bi && boxSet[si][ui].possibility[v].possible)
+                 {
+                     boxSet[si][ui].possibility[v].possible = false;
+                     change_occured = true;
+                 }
+              }
+          }
+       }
+
+       /* PASS 2: Count the occurances of each number in all possibilites */
+       var occurance_count = [];
+       var occurance_loc = [];
+       for (var bi=0;bi<9;bi++)
+       {
+            for (var v=1; v <= 9; v++)
+            {
+                if (!boxSet[si][bi].value && boxSet[si][bi].possibility[v].possible)
+                {
+                    occurance_count[v] = occurance_count[v] ? occurance_count[v]+1 : 1;
+                    occurance_loc[v] = boxSet[si][bi];
+                }
+            }
+       }
+       for (var v=1; v <= 9; v++)
+       {
+            if (occurance_count[v] == 1)
+            {
+                occurance_loc[v].value = v; 
+                change_occured = true;
+            }
+       }
+       /* Now eliminate that value from all boxes in the sqaure */
+    }
+} 
+
 
 
 function createSodukuTable()
@@ -148,30 +201,6 @@ function createSodukuTable()
     while (change_occured);
 }
 
-
-function filter_by_defined_in_set(boxSet)
-{
-    for (var si = 0; si < boxSet.length; si++)
-    {
-       /* Work out the known values for each and remove from all */
-       for (var bi=0;bi<9;bi++)
-       {
-          if (boxSet[si][bi].value)
-          {
-              var v = boxSet[si][bi].value;
-              for (var ui=0; ui < 9; ui++)
-              {
-                 if (ui != bi && boxSet[si][ui].possibility[v].possible)
-                 {
-                     boxSet[si][ui].possibility[v].possible = false;
-                     change_occured = true;
-                 }
-              }
-          }
-       }
-       /* Now eliminate that value from all boxes in the sqaure */
-    }
-} 
 
 
 
