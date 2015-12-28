@@ -4,7 +4,7 @@ var change_occured = false;
 function sodukuBox(value)
 {
     var bx = document.createElement("div");
-    bx.value = null;
+    bx.value = value ? value : null;
     bx.possibility = [];
     for (var c = 1; c <= 9; c++)
     {
@@ -16,7 +16,6 @@ function sodukuBox(value)
     if (value)
     {
         bx.appendChild(document.createTextNode(value));
-        bx.value = value;
     }
     else
     {
@@ -39,10 +38,15 @@ function sodukuBox(value)
 
     bx.refresh = function ()
     {
+       /* FIXME: Create setter functions for value and possibily - to ensure always in-sync */
        this.num_possibilies = 0;
        var pos = null;
        for (var c = 1; c <= 9; c++)
        {
+          if (this.value)
+          {
+              this.possibility[c].possible = this.value == c;
+          }
           if (this.possibility[c].possible)
           { 
               this.possibility[c].className = 'isposs';
