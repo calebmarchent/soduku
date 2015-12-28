@@ -34,7 +34,7 @@ table.box td {
 
 .onlyposs {
    /* color: Gainsboro; *//* Very light gray - useful for debug */
-   color: green; 
+   color: lightgreen; 
 }
 
 .isposs {

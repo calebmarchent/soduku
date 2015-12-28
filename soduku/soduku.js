@@ -6,6 +6,8 @@ function sodukuBox(value)
     var bx = document.createElement("div");
     bx.value = value ? value : null;
     bx.possibility = [];
+
+
     for (var c = 1; c <= 9; c++)
     {
          bx.possibility[c] = document.createElement('td');
@@ -13,55 +15,73 @@ function sodukuBox(value)
          bx.possibility[c].appendChild(document.createTextNode(c));
     }
 
+
+    /* Create presentation of confirmed value */
+
+    /* Create presentation of possibility table */
+    bx.poss_tbl = document.createElement('table');
+    var ntbdy = document.createElement('tbody');
+    bx.poss_tbl.className += 'box';
+    for (var k = 0; k < 3; k++) 
+    {
+        var ntr = document.createElement('tr');
+        for (var l = 0; l < 3; l++) 
+        {
+            var c = 1 + (3*k) + l;
+            ntr.appendChild(bx.possibility[c]);
+        }
+        ntbdy.appendChild(ntr);
+    }
+    bx.poss_tbl.appendChild(ntbdy);
+ 
     if (value)
     {
-        bx.appendChild(document.createTextNode(value));
+        bx.appendChild(document.createTextNode(bx.value ? bx.value : ''));
     }
     else
     {
-        tbl = document.createElement('table');
-        var ntbdy = document.createElement('tbody');
-        tbl.className += 'box';
-        for (var k = 0; k < 3; k++) 
-        {
-            var ntr = document.createElement('tr');
-            for (var l = 0; l < 3; l++) 
-            {
-                var c = 1 + (3*k) + l;
-                ntr.appendChild(bx.possibility[c]);
-            }
-            ntbdy.appendChild(ntr);
-        }
-        tbl.appendChild(ntbdy);
-        bx.appendChild(tbl);
+        bx.appendChild(bx.poss_tbl);
+    }
+
+    bx.setValue = function (newvalue)
+    {
+       if (this.value != newvalue)
+       {
+           change_occured = true;
+       }
+       this.value = newvalue;
+       this.className = 'onlyposs';
+       this.present_value = this.replaceChild(document.createTextNode(this.value), this.childNodes[0]);
     }
 
     bx.refresh = function ()
     {
-       /* FIXME: Create setter functions for value and possibily - to ensure always in-sync */
        this.num_possibilies = 0;
        var pos = null;
        for (var c = 1; c <= 9; c++)
        {
+           /* FIXME: Move this to the setter function */
           if (this.value)
           {
               this.possibility[c].possible = this.value == c;
           }
-          if (this.possibility[c].possible)
-          { 
-              this.possibility[c].className = 'isposs';
-              this.num_possibilies++;
-              pos = c; /* Store value so that can be assigned if we find the number of possibilites to be zero */
-          }
           else
           {
-              this.possibility[c].className = 'notposs' ;
+              if (this.possibility[c].possible)
+              { 
+                  this.possibility[c].className = 'isposs';
+                  this.num_possibilies++;
+                  pos = c; /* Store value so that can be assigned if we find the number of possibilites to be zero */
+              }
+              else
+              {
+                  this.possibility[c].className = 'notposs' ;
+              }
           }
        }
        if (this.num_possibilies == 1)
        {
-          this.value = pos;
-          this.possibility[pos].className = 'onlyposs' ;
+          this.setValue(pos);
        }
     }
 
@@ -113,8 +133,7 @@ function filter_by_defined_in_set(boxSet)
        {
             if (occurance_count[v] == 1)
             {
-                occurance_loc[v].value = v; 
-                change_occured = true;
+                occurance_loc[v].setValue(v);
             }
        }
        /* Now eliminate that value from all boxes in the sqaure */
