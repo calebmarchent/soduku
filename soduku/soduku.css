@@ -33,10 +33,13 @@ table.box td {
 }
 
 .onlyposs {
-   /* color: Gainsboro; *//* Very light gray - useful for debug */
-   color: lightgreen; 
+   color: green; 
 }
 
 .isposs {
    font-weight: bold;
+}
+
+.predefined {
+   background-color: gainsboro;
 }

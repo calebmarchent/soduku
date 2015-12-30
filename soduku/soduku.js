@@ -3,7 +3,7 @@ var change_occured = false;
 
 function sodukuBox(value)
 {
-    var bx = document.createElement("div");
+    var bx = document.createElement("td");
     bx.value = value ? value : null;
     bx.possibility = [];
 
@@ -35,6 +35,7 @@ function sodukuBox(value)
  
     if (value)
     {
+        bx.className = 'predefined';
         bx.appendChild(document.createTextNode(bx.value ? bx.value : ''));
     }
     else
@@ -166,7 +167,7 @@ function createSodukuTable()
                 var ntr = document.createElement('tr');
                 for (var n = 0; n < 3; n++)
                 {
-                    var ntd = document.createElement('td');
+                    //var ntd = document.createElement('td');
                     var x = (i * 3) + m;
                     var y = (j * 3) + n;
                     allBoxes[p] = sodukuBox(puzzle[x][y]);
@@ -189,8 +190,8 @@ function createSodukuTable()
                     }
                     columns[y].push(allBoxes[p]);
 
-                    ntd.appendChild(allBoxes[p]);
-                    ntr.appendChild(ntd);
+                    //ntd.appendChild(allBoxes[p]);
+                    ntr.appendChild(allBoxes[p]);
                     p++;
                 }
                 ntbdy.appendChild(ntr);
