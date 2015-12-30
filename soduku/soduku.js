@@ -7,14 +7,13 @@ function sodukuBox(value)
     bx.value = value ? value : null;
     bx.possibility = [];
 
-
     for (var c = 1; c <= 9; c++)
     {
          bx.possibility[c] = document.createElement('td');
          bx.possibility[c].possible = true;
+         bx.possibility[c].className = 'isposs';
          bx.possibility[c].appendChild(document.createTextNode(c));
     }
-
 
     /* Create presentation of confirmed value */
 
@@ -43,6 +42,30 @@ function sodukuBox(value)
         bx.appendChild(bx.poss_tbl);
     }
 
+    bx.eliminatePossibility = function (value)
+    {
+        /* If the posibility was possible, we are going to clear it so enure the change is marked to trigger another itteration */
+        if (this.possibility[value].possible)
+        {
+            change_occured = true;
+            this.possibility[value].possible = false;
+            this.possibility[value].className = 'notposs';
+
+            /* Recount the number of possibilities */
+            this.num_possibilies = 0;
+            for (var pos=1; pos <= 9; pos++)
+            {
+                this.num_possibilies++;
+            }
+
+            /* If we have managed to get down on only one posibility, the value is confirmed */
+            if (this.num_possibilies == 1)
+            {
+               this.setValue(pos);
+            }
+        }
+    }
+
     bx.setValue = function (newvalue)
     {
        if (this.value != newvalue)
@@ -50,39 +73,14 @@ function sodukuBox(value)
            change_occured = true;
        }
        this.value = newvalue;
+       /* Update the possibiliy flags to keep them in-sync */
+       for (var pos=1; pos <= 9; pos++)
+       {
+           this.possibility[c].possible = this.value == pos;
+       }
+       this.num_possibilies = 1;
        this.className = 'onlyposs';
        this.present_value = this.replaceChild(document.createTextNode(this.value), this.childNodes[0]);
-    }
-
-    bx.refresh = function ()
-    {
-       this.num_possibilies = 0;
-       var pos = null;
-       for (var c = 1; c <= 9; c++)
-       {
-           /* FIXME: Move this to the setter function */
-          if (this.value)
-          {
-              this.possibility[c].possible = this.value == c;
-          }
-          else
-          {
-              if (this.possibility[c].possible)
-              { 
-                  this.possibility[c].className = 'isposs';
-                  this.num_possibilies++;
-                  pos = c; /* Store value so that can be assigned if we find the number of possibilites to be zero */
-              }
-              else
-              {
-                  this.possibility[c].className = 'notposs' ;
-              }
-          }
-       }
-       if (this.num_possibilies == 1)
-       {
-          this.setValue(pos);
-       }
     }
 
     return bx;
@@ -108,8 +106,7 @@ function filter_by_defined_in_set(boxSet)
               {
                  if (ui != bi && boxSet[si][ui].possibility[v].possible)
                  {
-                     boxSet[si][ui].possibility[v].possible = false;
-                     change_occured = true;
+                     boxSet[si][ui].eliminatePossibility(v);
                  }
               }
           }
@@ -214,12 +211,6 @@ function createSodukuTable()
         filter_by_defined_in_set(squares);
         filter_by_defined_in_set(rows);
         filter_by_defined_in_set(columns);
-
-        /* Refresh display state of all boxes */
-        for (p = 0; p < allBoxes.length; p++)
-        {
-           allBoxes[p].refresh();
-        }
     } /* Keep going until no more changes are provoked by the rules we know */
     while (change_occured);
 }
