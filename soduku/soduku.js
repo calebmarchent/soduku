@@ -4,6 +4,8 @@ var change_occured = false;
 function sodukuBox(value)
 {
     var bx = document.createElement("td");
+    bx.height = 61;
+    bx.width  = 60;
     bx.value = value ? value : null;
     bx.possibility = [];
 
@@ -20,7 +22,7 @@ function sodukuBox(value)
     /* Create presentation of possibility table */
     bx.poss_tbl = document.createElement('table');
     var ntbdy = document.createElement('tbody');
-    bx.poss_tbl.className += 'box';
+    bx.className += 'box';
     for (var k = 0; k < 3; k++) 
     {
         var ntr = document.createElement('tr');
