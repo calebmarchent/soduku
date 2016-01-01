@@ -6,8 +6,9 @@ function sodukuBox(value)
     var bx = document.createElement("td");
     bx.height = 61;
     bx.width  = 60;
-    bx.value = value ? value : null;
+    bx.value = null;
     bx.possibility = [];
+    bx.num_possibilies = 9;
 
     for (var c = 1; c <= 9; c++)
     {
@@ -35,16 +36,6 @@ function sodukuBox(value)
     }
     bx.poss_tbl.appendChild(ntbdy);
  
-    if (value)
-    {
-        bx.className = 'predefined';
-        bx.appendChild(document.createTextNode(bx.value ? bx.value : ''));
-    }
-    else
-    {
-        bx.appendChild(bx.poss_tbl);
-    }
-
     bx.eliminatePossibility = function (value)
     {
         /* If the posibility was possible, we are going to clear it so enure the change is marked to trigger another itteration */
@@ -54,17 +45,11 @@ function sodukuBox(value)
             this.possibility[value].possible = false;
             this.possibility[value].className = 'notposs';
 
-            /* Recount the number of possibilities */
-            this.num_possibilies = 0;
-            for (var pos=1; pos <= 9; pos++)
+            /* If we are down the the last possibility, confirm that as the cell value */
+            if (--this.num_possibilies == 1)
             {
-                this.num_possibilies++;
-            }
-
-            /* If we have managed to get down on only one posibility, the value is confirmed */
-            if (this.num_possibilies == 1)
-            {
-               this.setValue(pos);
+               for (var p=1; !this.possibility[p].possible; p++) {};
+               this.setValue(p);
             }
         }
     }
@@ -74,17 +59,29 @@ function sodukuBox(value)
        if (this.value != newvalue)
        {
            change_occured = true;
+           this.className = 'onlyposs';
        }
        this.value = newvalue;
        /* Update the possibiliy flags to keep them in-sync */
        for (var pos=1; pos <= 9; pos++)
        {
-           this.possibility[c].possible = this.value == pos;
+           this.possibility[pos].possible = (this.value == pos);
        }
        this.num_possibilies = 1;
-       this.className = 'onlyposs';
        this.present_value = this.replaceChild(document.createTextNode(this.value), this.childNodes[0]);
     }
+
+    if (value)
+    {
+        bx.appendChild(document.createTextNode(bx.value ? bx.value : ''));
+        bx.setValue(value);
+        bx.className = 'predefined';
+    }
+    else
+    {
+        bx.appendChild(bx.poss_tbl);
+    }
+
 
     return bx;
 }
@@ -122,7 +119,7 @@ function filter_by_defined_in_set(boxSet)
        {
             for (var v=1; v <= 9; v++)
             {
-                if (!boxSet[si][bi].value && boxSet[si][bi].possibility[v].possible)
+                if (boxSet[si][bi].possibility[v].possible)
                 {
                     occurance_count[v] = occurance_count[v] ? occurance_count[v]+1 : 1;
                     occurance_loc[v] = boxSet[si][bi];
