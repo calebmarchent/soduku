@@ -8,6 +8,7 @@ function sodukuBox(value)
     bx.width  = 60;
     bx.value = null;
     bx.possibility = [];
+    bx.poss_bitmap = 0x1FF;
     bx.num_possibilies = 9;
 
     for (var c = 1; c <= 9; c++)
@@ -24,10 +25,10 @@ function sodukuBox(value)
     bx.poss_tbl = document.createElement('table');
     var ntbdy = document.createElement('tbody');
     bx.className += 'box';
-    for (var k = 0; k < 3; k++) 
+    for (var k = 0; k < 3; k++)
     {
         var ntr = document.createElement('tr');
-        for (var l = 0; l < 3; l++) 
+        for (var l = 0; l < 3; l++)
         {
             var c = 1 + (3*k) + l;
             ntr.appendChild(bx.possibility[c]);
@@ -35,7 +36,7 @@ function sodukuBox(value)
         ntbdy.appendChild(ntr);
     }
     bx.poss_tbl.appendChild(ntbdy);
- 
+
     bx.eliminatePossibility = function (value)
     {
         /* If the posibility was possible, we are going to clear it so enure the change is marked to trigger another itteration */
@@ -43,6 +44,7 @@ function sodukuBox(value)
         {
             change_occured = true;
             this.possibility[value].possible = false;
+            this.poss_bitmap &= ~(0x1 << (value - 1));
             this.possibility[value].className = 'notposs';
 
             /* If we are down the the last possibility, confirm that as the cell value */
@@ -67,6 +69,7 @@ function sodukuBox(value)
        {
            this.possibility[pos].possible = (this.value == pos);
        }
+       bx.poss_bitmap = 0x01 << (newvalue - 1);
        this.num_possibilies = 1;
        this.present_value = this.replaceChild(document.createTextNode(this.value), this.childNodes[0]);
     }
@@ -89,7 +92,7 @@ function sodukuBox(value)
 /******************** Rules ***************************************************/
 /* 1. If number the only number possible for any cell in the group, remove it */
 /*    from the possibilites for all other cells                               */
-/* 2. If any number only possible in one cell in the group, then it is the    */ 
+/* 2. If any number only possible in one cell in the group, then it is the    */
 /*    value of that cell                                                      */
 /******************************************************************************/
 function filter_by_defined_in_set(boxSet)
@@ -134,8 +137,42 @@ function filter_by_defined_in_set(boxSet)
             }
        }
        /* Now eliminate that value from all boxes in the sqaure */
+
+       /* Look for N boxes with N number of possibilites that are the same */
+       /* RULE 3: */
+
+       var sorted_boxes = boxSet[si].sort( function (a,b) {
+           return b.poss_bitmap - a.poss_bitmap
+       });
+       for (n = 1; n < 9; n++)
+       {
+           if (sorted_boxes[n-1].poss_bitmap ==
+               sorted_boxes[n].poss_bitmap)
+           {
+               if (sorted_boxes[n].num_possibilies == 2)
+               {
+                   /* Now need to find the possibility numbers for sorted_boxes[n] */
+                   for (var v=1; v <=9; v++)
+                   {
+                      if (sorted_boxes[n].possibility[v].possible)
+                      {
+                          for (var m=0; m < (n-1); m++)
+                          {
+                             sorted_boxes[m].eliminatePossibility(v);
+                          }
+                          for (var m=n+1; m < 9; m++)
+                          {
+                             sorted_boxes[m].eliminatePossibility(v);
+                          }
+                      }
+                   }
+                   debug = 'Identified matching pair';
+               }
+           }
+       }
+
     }
-} 
+}
 
 
 
@@ -145,9 +182,9 @@ function createSodukuTable()
     var allBoxes = [];
 
     /* References to box square, row and columns */
-    var squares = [];  
-    var rows = []; 
-    var columns = []; 
+    var squares = [];
+    var rows = [];
+    var columns = [];
 
     var body = document.getElementsByTagName('body')[0];
     var tbl = document.createElement('table');
@@ -155,7 +192,7 @@ function createSodukuTable()
     for (var i = 0; i < 3; i++)
     {
         var tr = document.createElement('tr');
-        for (var j = 0; j < 3; j++) 
+        for (var j = 0; j < 3; j++)
         {
             var td = document.createElement('td');
             var ntbl = document.createElement('table');
@@ -205,7 +242,7 @@ function createSodukuTable()
     body.appendChild(tbl);
 
     /* Apply Rules */
-    do 
+    do
     {
         change_occured = false;
         filter_by_defined_in_set(squares);
