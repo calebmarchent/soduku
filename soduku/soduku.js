@@ -37,7 +37,7 @@ function sodukuBox(value)
     }
     bx.poss_tbl.appendChild(ntbdy);
 
-    bx.eliminatePossibility = function (value)
+    bx.eliminatePossibility = function (value, activeruleclass)
     {
         /* If the posibility was possible, we are going to clear it so enure the change is marked to trigger another itteration */
         if (this.possibility[value].possible)
@@ -51,17 +51,17 @@ function sodukuBox(value)
             if (--this.num_possibilies == 1)
             {
                for (var p=1; !this.possibility[p].possible; p++) {};
-               this.setValue(p);
+               this.setValue(p,  activeruleclass);
             }
         }
     }
 
-    bx.setValue = function (newvalue)
+    bx.setValue = function (newvalue, activeruleclass)
     {
        if (this.value != newvalue)
        {
            change_occured = true;
-           this.className = 'onlyposs';
+           this.className = activeruleclass;
        }
        this.value = newvalue;
        /* Update the possibiliy flags to keep them in-sync */
@@ -77,8 +77,7 @@ function sodukuBox(value)
     if (value)
     {
         bx.appendChild(document.createTextNode(bx.value ? bx.value : ''));
-        bx.setValue(value);
-        bx.className = 'predefined';
+        bx.setValue(value, 'predefined');
     }
     else
     {
@@ -109,7 +108,7 @@ function filter_by_defined_in_set(boxSet)
               {
                  if (ui != bi && boxSet[si][ui].possibility[v].possible)
                  {
-                     boxSet[si][ui].eliminatePossibility(v);
+                     boxSet[si][ui].eliminatePossibility(v, 'rule1');
                  }
               }
           }
@@ -133,7 +132,7 @@ function filter_by_defined_in_set(boxSet)
        {
             if (occurance_count[v] == 1)
             {
-                occurance_loc[v].setValue(v);
+                occurance_loc[v].setValue(v, 'rule2');
             }
        }
        /* Now eliminate that value from all boxes in the sqaure */
@@ -158,11 +157,11 @@ function filter_by_defined_in_set(boxSet)
                       {
                           for (var m=0; m < (n-1); m++)
                           {
-                             sorted_boxes[m].eliminatePossibility(v);
+                             sorted_boxes[m].eliminatePossibility(v, 'rule3');
                           }
                           for (var m=n+1; m < 9; m++)
                           {
-                             sorted_boxes[m].eliminatePossibility(v);
+                             sorted_boxes[m].eliminatePossibility(v, 'rule3');
                           }
                       }
                    }

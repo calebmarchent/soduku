@@ -32,14 +32,12 @@ table.square td {
    color: white; 
 }
 
-.onlyposs {
-   color: green; 
-}
+.predefined { background-color: gainsboro; }
+.rule1 { color: yellowgreen; }
+.rule2 { color: blue; }
+.rule3 { color: pink; }
 
 .isposs {
    font-weight: bold;
 }
 
-.predefined {
-   background-color: gainsboro;
-}
