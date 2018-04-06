@@ -1,5 +1,5 @@
 
-var change_occured = false;
+var change_occurred = false;
 
 function sodukuBox(value)
 {
@@ -9,7 +9,7 @@ function sodukuBox(value)
     bx.value = null;
     bx.possibility = [];
     bx.poss_bitmap = 0x1FF;
-    bx.num_possibilies = 9;
+    bx.num_possibilities = 9;
 
     for (var c = 1; c <= 9; c++)
     {
@@ -39,16 +39,17 @@ function sodukuBox(value)
 
     bx.eliminatePossibility = function (value, activeruleclass)
     {
-        /* If the posibility was possible, we are going to clear it so enure the change is marked to trigger another itteration */
+        /* If the possibility was possible, we are going to clear it so ensure the change is marked to trigger another
+        iteration */
         if (this.possibility[value].possible)
         {
-            change_occured = true;
+            change_occurred = true;
             this.possibility[value].possible = false;
             this.poss_bitmap &= ~(0x1 << (value - 1));
             this.possibility[value].className = 'notposs';
 
             /* If we are down the the last possibility, confirm that as the cell value */
-            if (--this.num_possibilies == 1)
+            if (--this.num_possibilities == 1)
             {
                for (var p=1; !this.possibility[p].possible; p++) {};
                this.setValue(p,  activeruleclass);
@@ -60,17 +61,17 @@ function sodukuBox(value)
     {
        if (this.value != newvalue)
        {
-           change_occured = true;
+           change_occurred = true;
            this.className = activeruleclass;
        }
        this.value = newvalue;
-       /* Update the possibiliy flags to keep them in-sync */
+       /* Update the possibility flags to keep them in-sync */
        for (var pos=1; pos <= 9; pos++)
        {
            this.possibility[pos].possible = (this.value == pos);
        }
        bx.poss_bitmap = 0x01 << (newvalue - 1);
-       this.num_possibilies = 1;
+       this.num_possibilities = 1;
        this.present_value = this.replaceChild(document.createTextNode(this.value), this.childNodes[0]);
     }
 
@@ -90,7 +91,7 @@ function sodukuBox(value)
 
 /******************** Rules ***************************************************/
 /* 1. If number the only number possible for any cell in the group, remove it */
-/*    from the possibilites for all other cells                               */
+/*    from the possibilities for all other cells                              */
 /* 2. If any number only possible in one cell in the group, then it is the    */
 /*    value of that cell                                                      */
 /******************************************************************************/
@@ -115,29 +116,29 @@ function filter_by_defined_in_set(boxSet)
        }
 
        /* PASS 2: Count the occurances of each number in all possibilites */
-       var occurance_count = [];
-       var occurance_loc = [];
+       var occurrence_count = [];
+       var occurrence_loc = [];
        for (var bi=0;bi<9;bi++)
        {
             for (var v=1; v <= 9; v++)
             {
                 if (boxSet[si][bi].possibility[v].possible)
                 {
-                    occurance_count[v] = occurance_count[v] ? occurance_count[v]+1 : 1;
-                    occurance_loc[v] = boxSet[si][bi];
+                    occurrence_count[v] = occurrence_count[v] ? occurrence_count[v]+1 : 1;
+                    occurrence_loc[v] = boxSet[si][bi];
                 }
             }
        }
        for (var v=1; v <= 9; v++)
        {
-            if (occurance_count[v] == 1)
+            if (occurrence_count[v] == 1)
             {
-                occurance_loc[v].setValue(v, 'rule2');
+                occurrence_loc[v].setValue(v, 'rule2');
             }
        }
-       /* Now eliminate that value from all boxes in the sqaure */
+       /* Now eliminate that value from all boxes in the square */
 
-       /* Look for N boxes with N number of possibilites that are the same */
+       /* Look for N boxes with N number of possibilities that are the same */
        /* RULE 3: */
 
        var sorted_boxes = boxSet[si].sort( function (a,b) {
@@ -148,7 +149,7 @@ function filter_by_defined_in_set(boxSet)
            if (sorted_boxes[n-1].poss_bitmap ==
                sorted_boxes[n].poss_bitmap)
            {
-               if (sorted_boxes[n].num_possibilies == 2)
+               if (sorted_boxes[n].num_possibilities == 2)
                {
                    /* Now need to find the possibility numbers for sorted_boxes[n] */
                    for (var v=1; v <=9; v++)
@@ -243,12 +244,12 @@ function createSodukuTable()
     /* Apply Rules */
     do
     {
-        change_occured = false;
+        change_occurred = false;
         filter_by_defined_in_set(squares);
         filter_by_defined_in_set(rows);
         filter_by_defined_in_set(columns);
     } /* Keep going until no more changes are provoked by the rules we know */
-    while (change_occured);
+    while (change_occurred);
 }
 
 
